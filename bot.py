@@ -1,7 +1,6 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Updater, CommandHandler
 
 # إعداد التسجيل
 logging.basicConfig(
@@ -10,10 +9,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def start(update, context):
     """يرسل رسالة ترحيب عندما يتم إرسال الأمر /start"""
     user = update.message.from_user
-    await update.message.reply_text(
+    update.message.reply_text(
         f'السلام عليكم ورحمة الله وبركاته 🌟\n\n'
         f'أهلاً بك {user.first_name}!\n\n'
         '✅ البوت يعمل بنجاح على Render\n'
@@ -25,9 +24,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         '/info - معلومات عن البوت'
     )
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def help_command(update, context):
     """يعرض رسالة المساعدة"""
-    await update.message.reply_text(
+    update.message.reply_text(
         '📋 **أوامر البوت:**\n\n'
         '/start - بدء استخدام البوت\n'
         '/help - عرض هذه الرسالة\n'
@@ -35,9 +34,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         '🔧 البوت يعمل بنجاح على Render!'
     )
 
-async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def info(update, context):
     """يعرض معلومات عن البوت"""
-    await update.message.reply_text(
+    update.message.reply_text(
         '🤖 **معلومات البوت:**\n\n'
         '• الإسم: بوت التلغرام الأساسي\n'
         '• المنصة: Render\n'
@@ -58,15 +57,16 @@ def main():
         return
     
     try:
-        # إنشاء التطبيق
-        application = Application.builder().token(BOT_TOKEN).build()
+        # إنشاء التطبيق (لإصدار 13.15)
+        updater = Updater(BOT_TOKEN, use_context=True)
+        dispatcher = updater.dispatcher
         
         # إضافة معالجات الأوامر
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("help", help_command))
-        application.add_handler(CommandHandler("info", info))
-        application.add_handler(CommandHandler("مساعدة", help_command))
-        application.add_handler(CommandHandler("معلومات", info))
+        dispatcher.add_handler(CommandHandler("start", start))
+        dispatcher.add_handler(CommandHandler("help", help_command))
+        dispatcher.add_handler(CommandHandler("info", info))
+        dispatcher.add_handler(CommandHandler("مساعدة", help_command))
+        dispatcher.add_handler(CommandHandler("معلومات", info))
         
         logger.info("✅ البوت جاهز للعمل!")
         print("=" * 50)
@@ -79,7 +79,8 @@ def main():
         print("=" * 50)
         
         # بدء البوت
-        application.run_polling()
+        updater.start_polling()
+        updater.idle()
         
     except Exception as e:
         logger.error(f"❌ خطأ في تشغيل البوت: {e}")
