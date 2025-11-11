@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def start(update, context):
+async def start(update, context):
     """يرسل رسالة ترحيب عندما يتم إرسال الأمر /start"""
     user = update.message.from_user
     update.message.reply_text(
@@ -58,7 +58,7 @@ def main():
     
     try:
         # إنشاء التطبيق (لإصدار 13.15)
-        updater = Updater(BOT_TOKEN, use_context=True)
+        updater = Updater(token="TOKEN")
         dispatcher = updater.dispatcher
         
         # إضافة معالجات الأوامر
@@ -87,3 +87,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
