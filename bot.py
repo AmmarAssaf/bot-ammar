@@ -1,27 +1,30 @@
 from telegram.ext import Application, CommandHandler
 import os
+import logging
 
-# احصل على التوكن من متغير البيئة
+# إعداد التسجيل
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
-# الدوال الأساسية
 async def start(update, context):
-    await update.message.reply_text('مرحباً! البوت يعمل بنجاح 🎉')
+    await update.message.reply_text('مرحباً! البوت يعمل الآن 🎉')
 
-async def help(update, context):
-    await update.message.reply_text('أنا بوت مساعد، استخدم /start لبدء المحادثة')
+async def help_command(update, context):
+    await update.message.reply_text('الأوامر المتاحة:\n/start - بدء التشغيل\n/help - المساعدة')
 
 def main():
-    # 1. إنشاء التطبيق
-    application = Application.builder().token(TOKEN).build()
-    
-    # 2. إضافة الأوامر
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help))
-    
-    # 3. بدء التشغيل
-    print("🚀 البوت يعمل...")
-    application.run_polling()
+    try:
+        application = Application.builder().token(TOKEN).build()
+        
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("help", help_command))
+        
+        logger.info("🚀 البوت يعمل...")
+        application.run_polling()
+    except Exception as e:
+        logger.error(f"❌ خطأ: {e}")
 
 if __name__ == '__main__':
     main()
