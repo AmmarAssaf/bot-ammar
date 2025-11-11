@@ -1,0 +1,22 @@
+# ملفات البيئة
+.env
+.env.local
+
+# ملفات بايثون المترجمة
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# بيئات افتراضية
+.venv/
+venv/
+env/
+
+# ملفات نظام
+.DS_Store
+Thumbs.db
+
+# سجلات
+*.log
+logs/
