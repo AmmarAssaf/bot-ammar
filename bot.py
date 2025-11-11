@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 # إعداد التسجيل
 logging.basicConfig(
@@ -10,10 +10,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def start(update: Update, context: CallbackContext):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """يرسل رسالة ترحيب عندما يتم إرسال الأمر /start"""
     user = update.message.from_user
-    update.message.reply_text(
+    await update.message.reply_text(
         f'السلام عليكم ورحمة الله وبركاته 🌟\n\n'
         f'أهلاً بك {user.first_name}!\n\n'
         '✅ البوت يعمل بنجاح على Render\n'
@@ -21,9 +21,9 @@ def start(update: Update, context: CallbackContext):
         '🎉 يمكنك الآن تطوير البوت كما تريد'
     )
 
-def hello(update: Update, context: CallbackContext):
+async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """يرد على المستخدم بكلمة السلام عليكم"""
-    update.message.reply_text('وعليكم السلام ورحمة الله وبركاته 🌸')
+    await update.message.reply_text('وعليكم السلام ورحمة الله وبركاته 🌸')
 
 def main():
     logger.info("🚀 بدء تشغيل البوت المبسط...")
@@ -36,14 +36,14 @@ def main():
         return
     
     try:
-        # إنشاء التطبيق (إصدار أقدم)
-        updater = Updater(BOT_TOKEN)
-        dispatcher = updater.dispatcher
+        # إنشاء التطبيق - الطريقة الصحيحة للإصدار 20.7
+        application = Application.builder().token(BOT_TOKEN).build()
         
         # إضافة معالجات الأوامر
-        dispatcher.add_handler(CommandHandler("start", start))
-        dispatcher.add_handler(CommandHandler("hello", hello))
-        dispatcher.add_handler(CommandHandler("السلام", hello))
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("hello", hello))
+        application.add_handler(CommandHandler("السلام", hello))
+        application.add_handler(CommandHandler("اهلا", hello))
         
         logger.info("✅ البوت المبسط جاهز للعمل!")
         print("=" * 50)
@@ -54,9 +54,8 @@ def main():
         print("   /السلام - إلقاء التحية")
         print("=" * 50)
         
-        # بدء البوت
-        updater.start_polling()
-        updater.idle()
+        # بدء البوت - الطريقة الصحيحة
+        application.run_polling()
         
     except Exception as e:
         logger.error(f"❌ خطأ في تشغيل البوت: {e}")
