@@ -1,64 +1,22 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler
 
-# إعداد التسجيل
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+# إعداد مبسط
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """يرسل رسالة ترحيب عندما يتم إرسال الأمر /start"""
-    user = update.message.from_user
-    await update.message.reply_text(
-        f'السلام عليكم ورحمة الله وبركاته 🌟\n\n'
-        f'أهلاً بك {user.first_name}!\n\n'
-        '✅ البوت يعمل بنجاح على Render\n'
-        '🚀 تم حل جميع المشاكل التقنية\n'
-        '🎉 يمكنك الآن تطوير البوت كما تريد'
-    )
-
-async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """يرد على المستخدم بكلمة السلام عليكم"""
-    await update.message.reply_text('وعليكم السلام ورحمة الله وبركاته 🌸')
+async def start(update, context):
+    await update.message.reply_text('🎉 البوت يعمل بنجاح! السلام عليكم')
 
 def main():
-    logger.info("🚀 بدء تشغيل البوت المبسط...")
+    BOT_TOKEN = os.getenv('BOT_TOKEN', '8415474087:AAEDtwjvgogXfvpMzARe875svIEkSSDdNXk')
     
-    # الحصول على التوكن من متغير البيئة
-    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    app = Application.builder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
     
-    if not BOT_TOKEN:
-        logger.error("❌ BOT_TOKEN غير موجود في متغيرات البيئة")
-        return
-    
-    try:
-        # إنشاء التطبيق - الطريقة الصحيحة للإصدار 20.7
-        application = Application.builder().token(BOT_TOKEN).build()
-        
-        # إضافة معالجات الأوامر
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("hello", hello))
-        application.add_handler(CommandHandler("السلام", hello))
-        application.add_handler(CommandHandler("اهلا", hello))
-        
-        logger.info("✅ البوت المبسط جاهز للعمل!")
-        print("=" * 50)
-        print("🤖 البوت يعمل بنجاح!")
-        print("💡 جرب هذه الأوامر:")
-        print("   /start - بدء البوت")
-        print("   /hello - إلقاء التحية")
-        print("   /السلام - إلقاء التحية")
-        print("=" * 50)
-        
-        # بدء البوت - الطريقة الصحيحة
-        application.run_polling()
-        
-    except Exception as e:
-        logger.error(f"❌ خطأ في تشغيل البوت: {e}")
+    logger.info("🚀 البوت يعمل!")
+    app.run_polling()
 
 if __name__ == '__main__':
     main()
